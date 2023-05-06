@@ -6,7 +6,10 @@ enum VERB { INC, DEC, SET };
 
 const char *PATH = "/sys/class/backlight/amdgpu_bl0/brightness";
 
-void usage() { printf("Usage: sxbsbamdws [verb] [value]\n"); }
+void usage() {
+    printf("Usage: sxbsbamdws [verb] [value]\n\nVerb options are inc, dec, "
+           "set, and get.\n");
+}
 void version() { printf("sxbsbamdws: version 0.1.0\n"); }
 
 int get_brightness() {
@@ -15,7 +18,9 @@ int get_brightness() {
     int cur;
     FILE *rp = fopen(PATH, "r");
     if (rp == NULL) {
-        fprintf(stderr, "Could not open file.");
+        fprintf(
+            stderr,
+            "Could not open file.\nMight be a permissions error, try sudo.\n");
         exit(EXIT_FAILURE);
     }
 
@@ -44,7 +49,9 @@ int write_brightness(enum VERB verb, int brightness) {
 
     FILE *p = fopen(PATH, "w");
     if (p == NULL) {
-        fprintf(stderr, "Could not open file.");
+        fprintf(
+            stderr,
+            "Could not open file.\nMight be a permissions error, try sudo.\n");
         exit(EXIT_FAILURE);
     }
     fprintf(p, "%d", brightness);
@@ -79,7 +86,7 @@ int main(int argc, char *argv[]) {
         } else if (strcmp(argv[1], "set") == 0) {
             verb = SET;
         } else {
-            fprintf(stderr, "Verb not found. Try 'set', 'int', or 'dec'.");
+            fprintf(stderr, "Verb not found. Try set, get, int, or dec.");
             return 0;
         }
 
@@ -87,8 +94,10 @@ int main(int argc, char *argv[]) {
         write_brightness(verb, brightness);
     } else if (argc > 3) {
         fprintf(stderr, "Too many args.\n");
+        usage();
     } else {
         fprintf(stderr, "Too few args.\n");
+        usage();
     }
 
     return 0;
